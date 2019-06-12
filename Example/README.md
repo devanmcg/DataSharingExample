@@ -10,4 +10,4 @@ Put it in a folder you can find later because you need to update the `R` script 
 
 *Note of course this whole thing assumes you have `R` installed on your machine. 
 If not, run over to [https://www.r-project.org/](https://www.r-project.org/) and get it. 
-While you are at it, you might as well install [https://www.rstudio.com/products/rstudio/download/](R studio), too.*
+While you are at it, you might as well install [R studio](https://www.rstudio.com/products/rstudio/download/), too.*

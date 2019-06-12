@@ -1,0 +1,167 @@
+---
+title: "Combining data, script, and output with R markdown"
+subtitle: "R script demonstrating a case in which linear mixed-effect regression is a better analytical solution than ordinary least-squares regression"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+author: "Devan Allen McGranahan"
+---
+# Introduction 
+
+Here we demonstrate a case in which linear mixed-effect regression is a better analytical solution than ordinary least-squares regression. 
+This has been posted to [https://github.com/devanmcg/DaytaShayR](https://github.com/devanmcg/DaytaShayR) as an example of using `R` and `R` files to share data and script. 
+
+Shared under CC BY 4.0 by Devan Allen McGranahan (devan.mcgranahan@gmail.com). 
+
+# Package prep
+
+Check if `pacman` package is installed, and if not, `R` will install it. 
+Subsequent package loading in this script uses `pacman`. 
+You should read about its advantages. 
+
+```{r setup}
+knitr::opts_chunk$set(message = FALSE, warning=FALSE) # some .Rmd details
+if (!require("pacman")) install.packages("pacman")
+```
+
+# Data loading
+
+## Help `R` find data 
+
+Two options: 
+
+* Either set your working directory to the folder where you saved the files from github, e.g.
+    `setwd('C:/Users/Me/Documents/R')`
+* Or define this path as a variable you can build complete file paths from in specific `load()` calls. 
+This option is better for compatibility with `knitr`, for which `setwd()` can create problems:  
+    `LocalPath <- 'C:/Users/Me/Documents/R'`
+
+Then load the files, one way or the other:
+  * via the working directory: `load('./data/ExampleFireResponse.Rdata')` 
+  * via full file path (suitable for .Rmd files, etc): `load(paste(LocalPath, "/data/ExampleFireResponse.Rdata", sep=""))`
+
+```{r data_loading}
+LocalPath <- "C:/Users/Devan.McGranahan/GoogleDrive/DaytaShayR/Example"
+load(paste(LocalPath, "/data/ExampleFireResponse.Rdata", sep=""))
+```
+
+#   OLS regression with `lm`
+
+## A basic boxplot
+
+```{r bp_gg, fig.cap="The basic boxplot. Note there doesn't seem to be much difference between the means."}
+pacman::p_load(tidyverse)
+  ggplot(FireResponse) + theme_bw(16) +
+    geom_boxplot(aes(x=burn.season, 
+                     y=biomass)) + 
+    geom_point(data= . %>%
+                 group_by(burn.season) %>%
+                  summarize(biomass = mean(biomass)), 
+               aes(x=burn.season, y=biomass), 
+               pch=24, size=5, stroke=2) 
+```
+
+## A basic linear regression
+
+```{r lm_fit}
+  lm1 <- lm(biomass ~ burn.season, FireResponse) 
+  anova(lm1)
+```
+
+It is nice to see the results of the ANOVA, but notice how easy it is to make the output table look nice with the **pander** package:
+
+```{r pander_lm}
+pacman::p_load(pander)
+anova(lm1) %>%
+  pander("A nice anove table showing the lack of statistical difference in the basic linear regression.")
+```
+
+There doesn't seem to be much difference in biomass across the two burn seasons. 
+But let's look at the data -- there are some issues with how the data were collected: 
+
+```{r}
+head(FireResponse) %>%
+  pander("The top six rows of the dataset.")
+```
+
+One assumption of ANOVA is that all the samples are independent from one another. 
+These data, though, are clearly not independent: They are from two different ranches, and from different pastures within each ranch. 
+There is the strong possibility for what we call *random error* -- factors that affect the response variables but aren't part of our hypothesis. 
+In other words, if Bob does something different with his bull pastures differently than Stan does, but both burn in the spring and the summer, this difference in management could affect overall biomass response even if differences in burn season are the same. 
+But whether Bob and Stan have different biomass production isn't our hypothesis. 
+We want to know if there is a general difference in biomass production across burn seasons, irrespective of site-specific management. 
+
+#  Linear mixed-effect regression w/ `lmer`
+
+Let's look for variability across -- and within -- the two different sampling locations (pastures w/in ranches)
+
+```{r lmer_gg, fig.cap="While there is considerable variability in how much biomass is produced in the various pastures on the two ranches, there is clearly a general trend in which season of fire produces more forage."}
+  ggplot(FireResponse) + theme_bw(16) +
+    geom_boxplot(aes(x=pasture, 
+                     y=biomass, 
+                     fill=burn.season)) + 
+    geom_point(data= . %>%
+                 group_by(ranch, pasture, burn.season) %>%
+                 summarize(biomass = mean(biomass)), 
+               aes(x=pasture, y=biomass, 
+                   fill=burn.season), 
+               pch=24, color="black", 
+               size=3, stroke=1.5,
+              position = position_dodge(width=0.75)) + 
+    facet_wrap(~ranch) 
+```
+
+## Model fitting
+
+Use the `lmer` function from **lme4** model to account for spatial nestedness (non-independence) with a random effect term, enclosed in parentheses:
+
+```{r lmer}
+  pacman::p_load(lme4)
+  resp.lmer <- lmer(biomass ~ burn.season + (1|ranch/pasture), 
+                    data=FireResponse, REML=FALSE)
+```
+
+To determine if it is a 'good' model we can assess the fit of the residuals:
+
+```{r resid_gg, fig.cap="Linear relationship with neither slope nor intercept different from 0."}   
+  pacman::p_load(broom)
+  augment(resp.lmer) %>%
+    ggplot(aes(x = .fitted, y = .resid)) + theme_bw(14) +
+      geom_hline(yintercept = 0, lty=2) +
+      geom_point() +
+      geom_smooth(method="lm") 
+```
+
+Retrieve fixed-effect coefficients:
+```{r}
+  fixef(resp.lmer) %>% pander()
+```
+
+View ANOVA table:
+
+```{r}
+  anova(resp.lmer) %>% pander()
+```
+
+Note that the authors of **lme4** think *P*-values for LME models are BS, so they omitted them from their package, because they can. 
+But since `R` is an open community, others came in and wrote functions capable of returning *P*-values anyway:
+
+```{r}
+  pacman::p_load(car)
+  Anova(resp.lmer) %>% pander() 
+```
+
+Another way to determine if a model is any good is to compare it agains a null, intercept-only model. 
+If the two models are significantly different, we can assume the term(s) in the LME are meaningful in explaining variation in the response variable. 
+
+```{r}
+  resp.null <- lmer(biomass ~ 1 + (1|ranch/pasture), 
+                    data=FireResponse, REML=FALSE)
+  anova(resp.null, resp.lmer) %>% pander() 
+```
+
+Finally, we can get 95% confidence intervals and even a (pseudo-) *R^2* value:
+
+```{r}
+confint(resp.lmer) %>% pander()
+  pacman::p_load(MuMIn)
+  r.squaredLR(resp.lmer) 
+```

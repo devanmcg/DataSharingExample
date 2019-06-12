@@ -1,6 +1,6 @@
 # DaytaShayR 
 
-### *Tips and templates for sharing data and script with the world *
+### Tips and templates for sharing data and script with the world 
 
 ## Background
 

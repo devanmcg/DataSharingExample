@@ -17,7 +17,7 @@ But in ecology, results are often highly dependent on how those data are treated
 If others can't re-sample your data, isn't it even more important that they be able to re-analyze them? 
 
 Data transparency and shareability are being increasingly emphasized as part of open-source, open-access movements in science. 
-The arguments for transparency and access are myriad and I don't necessarily agree with them all^[Placeholder thought -- I want to comment more later!]. 
+The arguments for transparency and access are myriad and I don't necessarily agree with them all. 
 But when we consider the impossibility of collecting for ourselves the data reported (in studies both stimulating and stupefying), it stands to reason that we be able to re-run each other's analyses to confirm, learn, teach, and advance or refute as necessary.  
 
 ## Purpose

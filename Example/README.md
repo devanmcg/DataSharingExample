@@ -34,3 +34,4 @@ Especially for those `R` users not using R studio or who are not yet familiar wi
 It can be compiled with the `render` function as above, or with the 'knit' button in R studio. 
 It leverages the full functionality of markdown to combine written text and `R` script (distinguished as such by specific code 'chunks') to see both `R` inputs and outputs. 
 This is probably overkill for the basic goal of sharing data and script as supplemental files for a manuscript, but it is a great way to prepare more content-oriented supplemental material and appendices.
+Imagine how much easier -- and less error-prone! -- it is to simply write script for an appendix full of ANOVA results, rather than copy-pasting them into various tables. 

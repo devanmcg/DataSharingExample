@@ -1,0 +1,30 @@
+---
+title: "Title of your paper"
+subtitle: "An explanation that this is the script you used to do the paper"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+author: "Your name"
+---
+
+```{r setup}
+knitr::opts_chunk$set(message = FALSE, warning=FALSE) # some .Rmd details
+if (!require("pacman")) install.packages("pacman")
+```
+
+# Data loading
+
+## Help `R` find data 
+
+```{r data_loading}
+LocalPath <- "C:/Users/Me/R/Example"
+load(paste(LocalPath, "/data/ExampleFireResponse.Rdata", sep=""))
+```
+
+# Analysis
+
+```{r }
+
+```
+
+```{r }
+
+```

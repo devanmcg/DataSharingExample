@@ -22,11 +22,15 @@ There are three script files:
 
 * `ExampleBasicScript.R` is an example of the bare minimum type of file one should include with data when uploading as supplementary material. 
 This is really where one starts to turn the perfunctory nod to 'data transparency' into an enthusiastic head-waggle of analytical reproducibility. 
-With both your data *and* your script, your fans (and, alas, your jealous haters) can pull the hood off your analysis and see how you did those brilliant analyses, and if you care to share, made those stunning graphs. (And even before that, your editor and even reviewers can have confidence you did things right, and if not, might be able to give you specific tips for improvement rather than reject your paper outright.)
+With both your data *and* your script, your fans (and, alas, your jealous haters) can pull the hood off your Methods section and see how you did those brilliant analyses, and if you care to share, how you made those stunning graphs. (And even before that, your editor and even reviewers can have confidence you did things right, and if not, might be able to give you specific tips for improvement rather than reject your paper outright.)
 The file I've included here has two qualities: 
   + It is heavily commented.
   This might mostly be for your benefit, dear reader; you probably don't have to walk everyone through your script in such detail, but it can't hurt. 
-  + It 'flows' well enough that it can be `source`d as-is (or at least once the user has specified local file paths. 
+  + It 'flows' well enough that it can be `source`d as-is (or at least once the user has specified local file paths). 
   This point leads us to the second file:
-* `ExampleBasicRmarkdownScript.R` This file only has two `R`unnable commands -- it installs the `rmarkdown` package and renders the `ExampleBasicScript.R` file into an .`html` (or Word) document that allows one to see the output of the script in the order in which it is run. 
-Especially for those `R` users not using R studio or otherwise unfamiliar with the 'knit' button, This is a convenient way for folks to see your data in action. 
+* `ExampleBasicRmarkdownScript.R` has just two `R`unnable commands -- it installs the `rmarkdown` package and renders the `ExampleBasicScript.R` file into an .`html` (or Word) document that allows one to see the output of the script in the order in which it is run. 
+Especially for those `R` users not using R studio or who are not yet familiar with the 'knit' button, This is a convenient way for folks to see your data in action. 
+* `ExampleBetterRmarkdown.Rmd` is a full-fledged R markdown file. 
+It can be compiled with the `render` function as above, or with the 'knit' button in R studio. 
+It leverages the full functionality of markdown to combine written text and `R` script (distinguished as such by specific code 'chunks') to see both `R` inputs and outputs. 
+This is probably overkill for the basic goal of sharing data and script as supplemental files for a manuscript, but it is a great way to prepare more content-oriented supplemental material and appendices.

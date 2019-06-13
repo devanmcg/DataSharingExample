@@ -38,5 +38,5 @@
 #
 # G R A P H S 
 #
-# If you are so included, share your figure script here. 
+# If you are so inclined, share your figure script here. 
 # Use comments to refer to figure numbers in the paper. 
